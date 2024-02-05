@@ -164,14 +164,36 @@ describe("Order repository test", () => {
 
     order.customerId = customer2.id; 
 
+    const anotherOrderItem = new OrderItem("2", "Another Item", 324, product.id, 44);
+    await orderRepository.createOrderItem(anotherOrderItem, order);
+
+    order.items = [anotherOrderItem];
+
     await orderRepository.update(order);
 
-    const orderAfterUpdate = await OrderModel.findOne({where: { id: order.id }});
+    const orderAfterUpdate = await OrderModel.findOne(
+      {
+        where: { id: order.id },
+        include: ["items"],
+      });
+
+    
 
     expect(orderAfterUpdate.toJSON()).toStrictEqual({
       id: order.id,
       customer_id: customer2.id,
-      total: order.total()
+      total: order.total(),
+      items:
+      [
+        {
+          id: anotherOrderItem.id,
+          name: anotherOrderItem.name,
+          order_id: order.id,
+          price: anotherOrderItem.price,
+          product_id: anotherOrderItem.productId,
+          quantity: anotherOrderItem.quantity,
+        }
+      ]
     });
   });
 });

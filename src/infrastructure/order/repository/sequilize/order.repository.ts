@@ -40,7 +40,10 @@ export default class OrderRepository implements OrderRepositoryInterface {
       await OrderItemModel.bulkCreate(items, { transaction: t });
 
       await OrderModel.update(
-        { total: entity.total() },
+        { 
+          total: entity.total(),
+          customer_id: entity.customerId
+        },
         { where: { id: entity.id }, transaction: t }
       );
 

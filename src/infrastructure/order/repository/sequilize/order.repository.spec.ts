@@ -132,6 +132,7 @@ describe("Order repository test", () => {
 
   it("should update an existing order", async () => {
 
+    // criar dois clintes
     const customerRepository = new CustomerRepository();
 
     const customer = new Customer("C0001", "Customer 1");
@@ -144,6 +145,7 @@ describe("Order repository test", () => {
     customer2.changeAddress(address2);
     await customerRepository.create(customer2);
 
+    // cria uma ordem e atribui ao cliente 1 
     const productRepository = new ProductRepository();
     
     const product = new Product("P0001", "Product 1", 10);
@@ -159,6 +161,7 @@ describe("Order repository test", () => {
 
     const order = new Order("O0001", customer.id, [orderItem]);
 
+    // muda o cliente e os itens da ordem
     const orderRepository = new OrderRepository();
     await orderRepository.create(order);
 
@@ -176,8 +179,6 @@ describe("Order repository test", () => {
         where: { id: order.id },
         include: ["items"],
       });
-
-    
 
     expect(orderAfterUpdate.toJSON()).toStrictEqual({
       id: order.id,

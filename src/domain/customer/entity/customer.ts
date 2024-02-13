@@ -1,3 +1,9 @@
+import EventDispatcher from "../../@shared/event/event-dispatcher";
+import CustomerChangedAddressEvent from "../event/customer-changed-address.event";
+import CustomerCreatedEvent from "../event/customer-created.event";
+import Handler1 from "../event/handler/handler1.handler";
+import Handler2 from "../event/handler/handler2.handler";
+import HandlerChangedAddress from "../event/handler/handlerAddress.handler";
 import Address from "../value-object/address";
 
 export default class Customer {
@@ -11,6 +17,25 @@ export default class Customer {
     this._id = id;
     this._name = name;
     this.validate();
+
+    this.notifyUserCreatedEvent();
+  }
+
+  notifyUserCreatedEvent() {
+
+    const eventDispatcher = new EventDispatcher();
+
+    const eventName = "CustomerCreatedEvent";
+
+    eventDispatcher.register(eventName, new Handler1);
+    eventDispatcher.register(eventName, new Handler2);
+
+    const userCreatedEvent = new CustomerCreatedEvent({
+      id: this._id,
+      name: this._name
+    });
+
+    eventDispatcher.notify(userCreatedEvent);
   }
 
   get id(): string {
@@ -45,6 +70,25 @@ export default class Customer {
   
   changeAddress(address: Address) {
     this._address = address;
+
+    this.notifyUserChangedAddressEvent(address);
+  }
+
+  notifyUserChangedAddressEvent(address: Address) {
+
+    const eventDispatcher = new EventDispatcher();
+
+    const eventName = "CustomerChangedAddressEvent";
+
+    eventDispatcher.register(eventName, new HandlerChangedAddress);
+
+    const userChangedAddressEvent = new CustomerChangedAddressEvent({
+      id: this._id,
+      name: this._name,
+      addr: address.toString()
+    });
+
+    eventDispatcher.notify(userChangedAddressEvent);
   }
 
   isActive(): boolean {
